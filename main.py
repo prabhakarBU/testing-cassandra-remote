@@ -10,7 +10,8 @@ df = pl.DataFrame({
 
 # Convert Polars DataFrame to a string
 output = StringIO()
-df.write_csv(output, has_header=True, sep=",")
+path = "write-test.csv"
+df.write_csv(path, include_header=True, separator=",")
 df_str = output.getvalue().strip()  # Retrieve and strip CSV string
 
 # Print result
