@@ -46,15 +46,16 @@ jobs:
           fi
 
           # Step 3.3: Create the Anaconda environment if it doesn't exist
-          if ! conda info --envs | grep -q 'myenv'; then
+          if ! conda info --envs | grep -q 'devenv'; then
             echo 'Creating Anaconda environment...'
-            conda create -n myenv python=3.11 -y
+            conda create -n devenv -y
           else
             echo 'Environment already exists.'
           fi
 
           # Step 3.4: Activate the environment
-          source \$HOME/anaconda3/bin/activate myenv
+          conda activate devenv
+          conda install pip
 
           # Step 3.5: Install the required dependencies (from requirements.txt)
           if [ -f "testing-cassandra-remote/requirements.txt" ]; then
