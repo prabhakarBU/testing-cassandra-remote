@@ -24,8 +24,8 @@ jobs:
       # Step 3: Deploy to Vultr Server via SSH
       - name: Deploy to Vultr Server
         run: |
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
-            # Step 3.1: Navigate to /home/dev (or another desired directory)
+          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "
+          # Step 3.1: Navigate to /home/dev (or another desired directory)
           cd /home/dev
 
           # Step 3.2: Clone the GitHub repository (if not already cloned)
