@@ -21,10 +21,17 @@ jobs:
           ssh-keyscan -H 140.82.62.134 >> ~/.ssh/known_hosts
           sudo apt-get install sshpass
 
+      - name: Debug Secrets
+        run: |
+          echo "Debugging Secrets:"
+          echo "USER: ${{ secrets.SSH_USER }}"
+          echo "HOST: ${{ secrets.SSH_HOST }}"
+          echo "SSH_PASSWORD: (hidden for security)"
+
       # Step 3: Deploy to Vultr Server via SSH
       - name: Deploy to Vultr Server
         run: |
-          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} "
+          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
           # Step 3.1: Navigate to /home/dev (or another desired directory)
           cd /home/dev
 
