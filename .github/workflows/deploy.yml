@@ -1,18 +1,16 @@
 name: Deploy Python Project to Vultr
-
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to the main branch
-
+      - main # Trigger deployment on push to the main branch
 jobs:
   deploy:
-    runs-on: ubuntu-latest  # Use Ubuntu runner for GitHub Actions
+    runs-on: ubuntu-latest # Use Ubuntu runner for GitHub Actions
 
     steps:
       # Step 1: Checkout the repository code
       - name: Checkout repository
-        uses: actions/checkout@v3  # Check out the code from the GitHub repository
+        uses: actions/checkout@v3 # Check out the code from the GitHub repository
 
       # Step 2: Set up SSH key for server access
       - name: Configure SSH
@@ -21,40 +19,41 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H 140.82.62.134 >> ~/.ssh/known_hosts
+          sudo apt-get install sshpass
 
       # Step 3: Deploy to Vultr Server via SSH
       - name: Deploy to Vultr Server
         run: |
-            sshpass -p '${{ secrets.PSWD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
+          sshpass -p '${{ secrets.SSH_PASSWORD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
             # Step 3.1: Navigate to /home/dev (or another desired directory)
-            cd /home/dev
+          cd /home/dev
 
-            # Step 3.2: Clone the GitHub repository (if not already cloned)
-            if [ ! -d 'testing-cassandra-remote' ]; then
-              git clone https://github.com/prabhakarBU/testing-cassandra-remote.git
-            else
-              echo 'Repository already cloned. Pulling latest changes...'
-              cd testing-cassandra-remote
-              git pull origin main
-              cd ..
-            fi
+          # Step 3.2: Clone the GitHub repository (if not already cloned)
+          if [ ! -d 'testing-cassandra-remote' ]; then
+            git clone https://github.com/prabhakarBU/testing-cassandra-remote.git
+          else
+            echo 'Repository already cloned. Pulling latest changes...'
+            cd testing-cassandra-remote
+            git pull origin main
+            cd ..
+          fi
 
-            # Step 3.3: Create the Anaconda environment if it doesn't exist
-            if ! conda info --envs | grep -q 'myenv'; then
-              echo 'Creating Anaconda environment...'
-              conda create -n myenv python=3.11 -y
-            else
-              echo 'Environment already exists.'
-            fi
+          # Step 3.3: Create the Anaconda environment if it doesn't exist
+          if ! conda info --envs | grep -q 'myenv'; then
+            echo 'Creating Anaconda environment...'
+            conda create -n myenv python=3.11 -y
+          else
+            echo 'Environment already exists.'
+          fi
 
-            # Step 3.4: Activate the environment
-            source \$HOME/anaconda3/bin/activate myenv
+          # Step 3.4: Activate the environment
+          source \$HOME/anaconda3/bin/activate myenv
 
-            # Step 3.5: Install the required dependencies (from requirements.txt)
-            if [ -f "testing-cassandra-remote/requirements.txt" ]; then
-              pip3 install -r testing-cassandra-remote/requirements.txt
-            fi
+          # Step 3.5: Install the required dependencies (from requirements.txt)
+          if [ -f "testing-cassandra-remote/requirements.txt" ]; then
+            pip3 install -r testing-cassandra-remote/requirements.txt
+          fi
 
-            # Step 3.6: Run your Python script or entry point (e.g., main.py)
-            python3 /home/dev/testing-cassandra-remote/main.py
+          # Step 3.6: Run your Python script or entry point (e.g., main.py)
+          python3 /home/dev/testing-cassandra-remote/main.py
           "
