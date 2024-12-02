@@ -25,7 +25,7 @@ jobs:
       # Step 3: Deploy to Vultr Server via SSH
       - name: Deploy to Vultr Server
         run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_PRIVATE_KEY }} root@140.82.62.134 "
+            sshpass -p '${{ secrets.PSWD }}' ssh -v -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.HOST }} <<'ENDSSH'
             # Step 3.1: Navigate to /home/dev (or another desired directory)
             cd /home/dev
 
