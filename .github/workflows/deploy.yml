@@ -28,7 +28,7 @@ jobs:
             cd /home/dev
 
             # Step 3.2: Clone the GitHub repository (if not already cloned)
-            if [ ! -d 'your-project-repo' ]; then
+            if [ ! -d 'testing-cassandra-remote' ]; then
               git clone https://github.com/prabhakarBU/testing-cassandra-remote.git
             else
               echo 'Repository already cloned. Pulling latest changes...'
