@@ -2,7 +2,7 @@ import os
 import yfinance as yf
 import polars as pl
 from datetime import datetime
-# from cassandra.cluster import Cluster
+from cassandra.cluster import Cluster
 
 # Define a function to fetch data
 def fetch_trade_data(ticker, start_date, end_date):
