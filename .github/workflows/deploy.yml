@@ -44,15 +44,11 @@ jobs:
             git pull origin main
             cd ..
           fi
-
-          echo "Current working directory is: $(pwd)"
-          cd /home/dev/testing-cassandra-remote
-          echo "Current working directory after cd is: $(pwd)"
-          chmod +x /home/dev/testing-cassandra-remote/run_script.sh
           "
       
       - name: Run the script
         run: |
+          chmod +x /home/dev/testing-cassandra-remote/run_script.sh
           sh /home/dev/testing-cassandra-remote/run_script.sh
           (crontab -l 2>/dev/null; echo \"0 * * * * /home/dev/testing-cassandra-remote/run_script.sh >> /home/dev/testing-cassandra-remote/logs/main.log 2>&1\") | crontab -          
           
