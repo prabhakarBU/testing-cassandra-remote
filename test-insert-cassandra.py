@@ -5,18 +5,21 @@ import boto3
 import datetime
 import polars as pl
 import os
-time_now  = datetime.datetime.now().strftime('%m_%d_%Y_%H_%M_%S') 
+
+time_now = datetime.datetime.now().strftime("%m_%d_%Y_%H_%M_%S")
 
 # Connect to the Cassandra cluster
 USERNAME = "cassandra"
 PASSWORD = "cassandra"
 auth_provider = PlainTextAuthProvider(USERNAME, PASSWORD)
-cluster = Cluster(['127.0.0.1'], auth_provider=auth_provider)  # Replace with container's IP if needed
+cluster = Cluster(
+    ["127.0.0.1"], auth_provider=auth_provider
+)  # Replace with container's IP if needed
 session = cluster.connect()
 
 
 # Use the keyspace
-session.set_keyspace('test_keyspace')
+session.set_keyspace("test_keyspace")
 
 # Example data to insert
 # data = [
@@ -26,12 +29,14 @@ session.set_keyspace('test_keyspace')
 # ]
 
 # Create a Polars DataFrame with example data
-data_frame = pl.DataFrame({
-    "stock_id": [uuid4() for _ in range(3)],
-    "symbol": ["AAPL", "MSFT", "GOOG"],
-    "price": [150.75, 299.65, 2729.89],
-    "timestamp": [datetime.datetime.now() for _ in range(3)]
-})
+data_frame = pl.DataFrame(
+    {
+        "stock_id": [uuid4() for _ in range(3)],
+        "symbol": ["AAPL", "MSFT", "GOOG"],
+        "price": [150.75, 299.65, 2729.89],
+        "timestamp": [datetime.datetime.now() for _ in range(3)],
+    }
+)
 
 print("Printing Polars data frame:")
 print(data_frame)
@@ -42,21 +47,24 @@ insert_query = """
     VALUES (%s, %s, %s, %s) IF NOT EXISTS;
 """
 
-data = [(row['stock_id'], row['symbol'], row['price'], row['timestamp']) for row in data_frame.to_dicts()]
+data = [
+    (row["stock_id"], row["symbol"], row["price"], row["timestamp"])
+    for row in data_frame.to_dicts()
+]
 
 # for row in data_frame.iter_rows(named=True):
 for row in data:
     session.execute(insert_query, row)
-    
+
 # for row in data:
-    # session.execute(insert_query, row)
+# session.execute(insert_query, row)
 
 print("Data inserted successfully to Cassandra!")
 
 # Update a record
 # update_query = """
-#     UPDATE stocks 
-#     SET price = %s 
+#     UPDATE stocks
+#     SET price = %s
 #     WHERE stock_id = %s;
 # """
 
@@ -75,7 +83,7 @@ print("Data inserted successfully to Cassandra!")
 
 
 # Fetch and display the data
-rows = session.execute('SELECT * FROM stocks;')
+rows = session.execute("SELECT * FROM stocks;")
 for row in rows:
     print(row)
 
@@ -84,16 +92,16 @@ for row in rows:
 # Save DataFrame as Parquet and CSV
 output_dir = "./output-files"
 os.makedirs(output_dir, exist_ok=True)
-parquet_file_name = "stocks.parquet"+time_now
-csv_file_name = "stocks.csv"+time_now
+parquet_file_name = "stocks-" + time_now + ".parquet"
+csv_file_name = "stocks-" + time_now + ".csv"
 parquet_file = os.path.join(output_dir, parquet_file_name)
 csv_file = os.path.join(output_dir, csv_file_name)
 
 data = {
     "stock_id": [str(uuid4()) for _ in range(3)],
-    "symbol": ['AAPL', 'MSFT', 'GOOG'],
+    "symbol": ["AAPL", "MSFT", "GOOG"],
     "price": [150.75, 299.65, 2729.89],
-    "timestamp": [datetime.datetime.now() for _ in range(3)]
+    "timestamp": [datetime.datetime.now() for _ in range(3)],
 }
 
 data_frame = pl.DataFrame(data)
@@ -105,7 +113,7 @@ print(f"Saved Parquet file at {parquet_file}")
 print(f"Saved CSV file at {csv_file}")
 
 # Upload to S3 bucket
-s3_client = boto3.client('s3')
+s3_client = boto3.client("s3")
 bucket_name = "testing-cassandra-remote-bucket"
 project_name = "testing-cassandra-remote"
 
@@ -115,7 +123,7 @@ csv_s3_key = f"{output_dir}/stocks.csv"
 try:
     s3_client.upload_file(parquet_file, bucket_name, parquet_s3_key)
     print(f"Uploaded Parquet to S3: {bucket_name}/{parquet_s3_key}")
-    
+
     s3_client.upload_file(csv_file, bucket_name, csv_s3_key)
     print(f"Uploaded CSV to S3: {bucket_name}/{csv_s3_key}")
 except Exception as e:
