@@ -14,14 +14,20 @@ conda activate datasnake-test-env
 pip3 install cassandra-driver
 cd /home/dev/testing-cassandra-remote
 # Step 3.5: Install the required dependencies (from requirements.txt)
-if [ -f "requirements.txt" ]; then
-pip3 install -r requirements.txt
+if [ -f "/home/dev/testing-cassandra-remote/requirements.txt" ]; then
+pip3 install -r /home/dev/testing-cassandra-remote/requirements.txt
 fi
 
 # Verify Polars installation
 if ! python3 -c "import polars" &>/dev/null; then
     echo "Polars is not installed. Installing it explicitly..."
     pip3 install polars
+fi
+
+# Verify Polars installation
+if ! python3 -c "import boto3" &>/dev/null; then
+    echo "boto3 is not installed. Installing it explicitly..."
+    pip3 install boto3
 fi
 
 CASSANDRA_HOST="127.0.0.1"

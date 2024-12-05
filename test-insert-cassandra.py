@@ -18,12 +18,6 @@ session = cluster.connect()
 # Use the keyspace
 session.set_keyspace('test_keyspace')
 
-# Insert data
-insert_query = """
-    INSERT INTO stocks (stock_id, symbol, price, timestamp)
-    VALUES (%s, %s, %s, %s);
-"""
-
 # Example data to insert
 # data = [
 #     (uuid4(), 'AAPL', 150.75, datetime.datetime.now()),
@@ -33,7 +27,7 @@ insert_query = """
 
 # Create a Polars DataFrame with example data
 data_frame = pl.DataFrame({
-    "stock_id": [str(uuid4()) for _ in range(3)],
+    "stock_id": [uuid4() for _ in range(3)],
     "symbol": ["AAPL", "MSFT", "GOOG"],
     "price": [150.75, 299.65, 2729.89],
     "timestamp": [datetime.datetime.now() for _ in range(3)]
@@ -42,9 +36,17 @@ data_frame = pl.DataFrame({
 print("Printing Polars data frame:")
 print(data_frame)
 
+# Insert data
+insert_query = """
+    INSERT INTO stocks (stock_id, symbol, price, timestamp)
+    VALUES (%s, %s, %s, %s);
+"""
 
-for row in data_frame.iter_rows(named=True):
-    session.execute(insert_query, (row["stock_id"], row["symbol"], row["price"], row["timestamp"]))
+data = [(row['stock_id'], row['symbol'], row['price'], row['timestamp']) for row in data_frame.to_dicts()]
+
+# for row in data_frame.iter_rows(named=True):
+for row in data:
+    session.execute(insert_query, row)
     
 # for row in data:
     # session.execute(insert_query, row)
