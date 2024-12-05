@@ -89,11 +89,14 @@ csv_file_name = "stocks.csv"+time_now
 parquet_file = os.path.join(output_dir, parquet_file_name)
 csv_file = os.path.join(output_dir, csv_file_name)
 
-# Convert UUIDs to strings for parquet compatibility
-data_frame = data_frame.with_columns([
-    pl.col("stock_id").cast(pl.Utf8),  # Cast UUID to string (Utf8)
-    pl.col("timestamp").cast(pl.Datetime)  # Ensure timestamp is in a datetime format
-])
+data = {
+    "stock_id": [str(uuid4()) for _ in range(3)],
+    "symbol": ['AAPL', 'MSFT', 'GOOG'],
+    "price": [150.75, 299.65, 2729.89],
+    "timestamp": [datetime.datetime.now() for _ in range(3)]
+}
+
+data_frame = pl.DataFrame(data)
 
 data_frame.write_parquet(parquet_file)
 data_frame.write_csv(csv_file)
