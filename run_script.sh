@@ -1,6 +1,6 @@
 #!/bin/bash
 # Step 3.3: Create the Anaconda environment if it doesn't exist
-if ! conda info --envs | grep -q 'devenv'; then
+if ! conda info --envs | grep -q 'datasnake-test-env'; then
 echo 'Creating Anaconda environment...'
 conda create --n datasnake-test-env python=3.8 -y
 else
