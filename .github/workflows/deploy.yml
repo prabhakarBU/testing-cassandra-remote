@@ -49,7 +49,7 @@ jobs:
           cd /home/dev/testing-cassandra-remote
           echo "Current working directory after cd is: $(pwd)"
           chmod +x /home/dev/testing-cassandra-remote/run_script.sh
-          
+          "
       
       - name: Run the script
         run: |
