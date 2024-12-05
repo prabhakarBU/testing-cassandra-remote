@@ -24,7 +24,7 @@ if ! python3 -c "import polars" &>/dev/null; then
     pip3 install polars
 fi
 
-# Verify Polars installation
+# Verify boto3 installation
 if ! python3 -c "import boto3" &>/dev/null; then
     echo "boto3 is not installed. Installing it explicitly..."
     pip3 install boto3
